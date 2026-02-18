@@ -74,8 +74,17 @@ export async function initTcf(): Promise<void> {
       try {
         tcModel = _TCString.decode(existingCookie);
         tcModel.gvl = gvl;
-        cmpApi.update(existingCookie, false);
-        notifyListeners(existingCookie);
+        // TCF v2.3: vendorsDisclosed is mandatory — upgrade old v2.2 cookies on the fly
+        if (tcModel.vendorsDisclosed.maxId === 0) {
+          tcModel.setAllVendorsDisclosed();
+          const upgraded = _TCString.encode(tcModel);
+          setTcCookie(upgraded);
+          cmpApi.update(upgraded, false);
+          notifyListeners(upgraded);
+        } else {
+          cmpApi.update(existingCookie, false);
+          notifyListeners(existingCookie);
+        }
       } catch {
         tcModel = createFreshModel(gvl);
         cmpApi.update("", true);
@@ -107,6 +116,8 @@ function createFreshModel(gvl: GVL): TCModel {
   model.consentLanguage = CONSENT_LANGUAGE;
   model.isServiceSpecific = true;
   model.publisherCountryCode = "PL";
+  // TCF v2.3: vendorsDisclosed segment is mandatory — disclose all GVL vendors
+  model.setAllVendorsDisclosed();
   return model;
 }
 

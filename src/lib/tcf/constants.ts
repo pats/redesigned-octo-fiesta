@@ -16,7 +16,7 @@ export const GVL_BASE_URL = "/gvl/";
 /**
  * Mapping from vanilla-cookieconsent categories to TCF Purpose IDs.
  *
- * TCF v2.2 Purposes:
+ * TCF v2.3 Purposes:
  *  1 – Store and/or access information on a device
  *  2 – Select basic ads
  *  3 – Create a personalised ads profile
@@ -37,7 +37,7 @@ export const CATEGORY_TO_PURPOSES: Record<string, number[]> = {
 /**
  * Mapping from vanilla-cookieconsent categories to TCF Special Feature IDs.
  *
- * TCF v2.2 Special Features:
+ * TCF v2.3 Special Features:
  *  1 – Use precise geolocation data
  *  2 – Actively scan device characteristics for identification
  */

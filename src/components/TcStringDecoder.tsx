@@ -108,8 +108,9 @@ interface DecodedTcData {
   lastUpdated: Date;
   vendorListVersion: number;
   isServiceSpecific: boolean;
-  useNonStandardStacks: boolean;
+  useNonStandardTexts: boolean;
   purposeOneTreatment: boolean;
+  vendorsDisclosedMax: number;
   publisherCountryCode: string;
   purposeConsents: Set<number>;
   purposeLegitimateInterests: Set<number>;
@@ -145,7 +146,7 @@ function decodeTcString(tcString: string): DecodedTcData | null {
       lastUpdated: model.lastUpdated,
       vendorListVersion: model.vendorListVersion,
       isServiceSpecific: model.isServiceSpecific,
-      useNonStandardStacks: model.useNonStandardStacks,
+      useNonStandardTexts: model.useNonStandardTexts,
       purposeOneTreatment: model.purposeOneTreatment,
       publisherCountryCode: model.publisherCountryCode,
       purposeConsents,
@@ -153,6 +154,7 @@ function decodeTcString(tcString: string): DecodedTcData | null {
       specialFeatureOptins,
       vendorConsentsMax: model.vendorConsents.maxId ?? 0,
       vendorLegitimateInterestsMax: model.vendorLegitimateInterests.maxId ?? 0,
+      vendorsDisclosedMax: model.vendorsDisclosed.maxId ?? 0,
     };
   } catch (e) {
     console.error("[TcStringDecoder] decode failed:", e);
@@ -388,7 +390,7 @@ export default function TcStringDecoder() {
         Zdekodowany TC String
       </h2>
       <p style={{ margin: "0 0 0.5rem", fontSize: 12, color: "#718096" }}>
-        TCF v2.2 — co użytkownik zaakceptował
+        TCF v2.3 — co użytkownik zaakceptował
       </p>
 
       {/* Metadata */}
@@ -415,6 +417,10 @@ export default function TcStringDecoder() {
         <MetaRow
           label="Maks. ID dostawcy (uzasadniony interes)"
           value={decoded.vendorLegitimateInterestsMax || "—"}
+        />
+        <MetaRow
+          label="Maks. ID ujawnionego dostawcy (v2.3)"
+          value={decoded.vendorsDisclosedMax || "—"}
         />
       </Section>
 
