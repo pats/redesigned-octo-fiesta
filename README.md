@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TCF v2.3 CMP Demo
 
-## Getting Started
+A sample **Consent Management Platform (CMP)** implementation compliant with the **IAB Transparency & Consent Framework v2.3**.
 
-First, run the development server:
+The app demonstrates how user consent is collected, encoded into a TC String, and how to read back exactly what the user agreed to.
+
+## What is TCF?
+
+The **Transparency & Consent Framework (TCF)** is a standard developed by IAB Europe that defines a unified way for websites to collect and signal user consent to advertising and analytics vendors. Once consent is collected, it is encoded into a **TC String** — a compressed base64url value stored in the `euconsent-v2` cookie — which downstream ad-tech vendors read to determine what data processing is permitted.
+
+TCF v2.3 (mandatory from 28 February 2026) makes the **Disclosed Vendors** segment required in every TC String, removing ambiguity about which vendors were actually shown to the user.
+
+## How it works
+
+1. On first visit a cookie consent banner is shown
+2. The user accepts all categories or only the necessary ones
+3. The choice is encoded into a TC String per the TCF v2.3 spec and saved in a cookie
+4. The home page displays the raw TC String and its decoded breakdown — showing exactly which Purposes (1–10) and Special Features (1–2) the user consented to
+
+## Consent mapping
+
+| Category | TCF Purposes | Special Features |
+|----------|--------------|------------------|
+| Necessary | Purpose 1 — store/access device info | — |
+| Analytics | Purposes 7–10 — measurement, market research | — |
+| Marketing | Purposes 2–6 — ad personalisation | SF 1 (geolocation), SF 2 (fingerprinting) |
+
+## Stack
+
+- **Next.js 16** (App Router, React 19)
+- **vanilla-cookieconsent 3** — consent banner UI
+- **@iabtechlabtcf/core + cmpapi** — official IAB SDK for TC String encoding/decoding and `window.__tcfapi` CMP API
+- **Playwright** — end-to-end tests
+
+## Running locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tests
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm test
+```
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The e2e suite covers: TC String generation after consent, Disclosed Vendors segment presence (TCF v2.3 requirement), correct per-purpose/SF consent decoding, and cookie persistence across page reloads.
