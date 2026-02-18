@@ -4,6 +4,8 @@ A sample **Consent Management Platform (CMP)** implementation compliant with the
 
 The app demonstrates how user consent is collected, encoded into a TC String, and how to read back exactly what the user agreed to.
 
+**Live demo:** https://redesigned-octo-fiesta.vercel.app/
+
 ## What is TCF?
 
 The **Transparency & Consent Framework (TCF)** is a standard developed by IAB Europe that defines a unified way for websites to collect and signal user consent to advertising and analytics vendors. Once consent is collected, it is encoded into a **TC String** — a compressed base64url value stored in the `euconsent-v2` cookie — which downstream ad-tech vendors read to determine what data processing is permitted.
