@@ -3,7 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { getTcString, subscribeTcString } from "@/lib/tcf/tcf-manager";
 
-// TCF v2.2 purpose definitions (Polish)
+// TCF v2.3 purpose definitions (Polish)
 const PURPOSES = [
   {
     id: 1,
@@ -203,7 +203,15 @@ function Section({
   );
 }
 
-function MetaRow({ label, value }: { label: string; value: React.ReactNode }) {
+function MetaRow({
+  label,
+  value,
+  testId,
+}: {
+  label: string;
+  value: React.ReactNode;
+  testId?: string;
+}) {
   return (
     <div
       style={{
@@ -218,7 +226,9 @@ function MetaRow({ label, value }: { label: string; value: React.ReactNode }) {
       <span style={{ color: "#718096", minWidth: 200, flexShrink: 0 }}>
         {label}
       </span>
-      <span style={{ color: "#2d3748", fontWeight: 500 }}>{value}</span>
+      <span data-testid={testId} style={{ color: "#2d3748", fontWeight: 500 }}>
+        {value}
+      </span>
     </div>
   );
 }
@@ -230,6 +240,8 @@ function ConsentRow({
   category,
   hasConsent,
   hasLegitimateInterest,
+  consentTestId,
+  liTestId,
 }: {
   id: number;
   name: string;
@@ -237,6 +249,8 @@ function ConsentRow({
   category: string;
   hasConsent: boolean;
   hasLegitimateInterest?: boolean;
+  consentTestId?: string;
+  liTestId?: string;
 }) {
   const color = CATEGORY_COLORS[category] ?? "#4a5568";
 
@@ -312,18 +326,27 @@ function ConsentRow({
           fontSize: 11,
         }}
       >
-        <ConsentBadge label="zgoda" active={hasConsent} />
+        <ConsentBadge label="zgoda" active={hasConsent} testId={consentTestId} />
         {hasLegitimateInterest !== undefined && (
-          <ConsentBadge label="LI" active={hasLegitimateInterest} />
+          <ConsentBadge label="LI" active={hasLegitimateInterest} testId={liTestId} />
         )}
       </div>
     </div>
   );
 }
 
-function ConsentBadge({ label, active }: { label: string; active: boolean }) {
+function ConsentBadge({
+  label,
+  active,
+  testId,
+}: {
+  label: string;
+  active: boolean;
+  testId?: string;
+}) {
   return (
     <span
+      data-testid={testId}
       style={{
         padding: "1px 7px",
         borderRadius: 4,
@@ -367,6 +390,7 @@ export default function TcStringDecoder() {
 
   return (
     <div
+      data-testid="tc-decoder"
       style={{
         fontFamily: "system-ui, sans-serif",
         fontSize: 13,
@@ -399,8 +423,8 @@ export default function TcStringDecoder() {
         <MetaRow label="Kraj wydawcy" value={decoded.publisherCountryCode} />
         <MetaRow label="Utworzono" value={formatDate(decoded.created)} />
         <MetaRow label="Zaktualizowano" value={formatDate(decoded.lastUpdated)} />
-        <MetaRow label="Wersja GVL (Global Vendor List)" value={decoded.vendorListVersion} />
-        <MetaRow label="CMP ID" value={decoded.cmpId} />
+        <MetaRow label="Wersja GVL (Global Vendor List)" value={decoded.vendorListVersion} testId="tc-decoder-gvl-version" />
+        <MetaRow label="CMP ID" value={decoded.cmpId} testId="tc-decoder-cmp-id" />
         <MetaRow label="CMP Version" value={decoded.cmpVersion} />
         <MetaRow
           label="Specyficzne dla serwisu"
@@ -421,6 +445,7 @@ export default function TcStringDecoder() {
         <MetaRow
           label="Maks. ID ujawnionego dostawcy (v2.3)"
           value={decoded.vendorsDisclosedMax || "—"}
+          testId="tc-decoder-vendors-disclosed"
         />
       </Section>
 
@@ -435,6 +460,8 @@ export default function TcStringDecoder() {
             category={p.category}
             hasConsent={decoded.purposeConsents.has(p.id)}
             hasLegitimateInterest={decoded.purposeLegitimateInterests.has(p.id)}
+            consentTestId={`purpose-${p.id}-consent`}
+            liTestId={`purpose-${p.id}-li`}
           />
         ))}
       </Section>
@@ -449,6 +476,7 @@ export default function TcStringDecoder() {
             description={sf.description}
             category={sf.category}
             hasConsent={decoded.specialFeatureOptins.has(sf.id)}
+            consentTestId={`sf-${sf.id}-consent`}
           />
         ))}
       </Section>
