@@ -1,6 +1,7 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 import TcStringDisplay from "@/components/TcStringDisplay";
+import TcStringDecoder from "@/components/TcStringDecoder";
 
 export default function Home() {
   return (
@@ -37,6 +38,7 @@ export default function Home() {
           </p>
         </div>
         <TcStringDisplay />
+        <TcStringDecoder />
         <div className={styles.ctas}>
           <a
             className={styles.primary}
